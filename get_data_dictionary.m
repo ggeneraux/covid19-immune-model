@@ -46,19 +46,33 @@ function data_dictionary = get_data_dictionary(PARAMS)
 	iN = 2000; % immature N
 
 % Read Parameters from Excel workbook and initialize data dictionary
-   [param,pfield,~] = xlsread('Initialize.xlsx','Parameters');
+   Param_table = readtable('Initialize.xlsx', 'Sheet', 'Parameters');
+   param = Param_table{:,2};
+   pfield = Param_table{:,1};
     for ii = 1:length(pfield)
         k.(pfield{ii,1}) = param(ii);
     end
     
-    [IC,sn,~] = xlsread('Initialize.xlsx','IC');
+    IC_table = readtable('Initialize.xlsx', 'Sheet', 'IC');
+    IC = IC_table{:,2};
+    sn = IC_table{:,1};
     species_list = strings(length(sn),1);
     [species_list{:}] = sn{:};
 	n_params = length(pfield);
 	n_species = length(IC);
 
+    Rates_table = readtable('Initialize.xlsx', 'Sheet', 'Rates');
+    Rates = Rates_table{:,2};
+    rn = Rates_table{:,1};
+    rates_list = strings(length(rn),1);
+    [rates_list{:}] = rn{:};
+	n_rates = length(Rates);
+
 	num_list_species = linspace(1,n_species,n_species)';
 	species_names = [num_list_species species_list];
+
+    num_list_rates = linspace(1,n_rates,n_rates)';
+	rates_names = [num_list_rates rates_list];
 
 	num_list = linspace(1,n_params,n_params)';
 	parameter_names = [num_list cell2mat(struct2cell(k))];
@@ -70,8 +84,10 @@ function data_dictionary = get_data_dictionary(PARAMS)
  	data_dictionary.initial_condition = IC;
  	data_dictionary.parameter_names = parameter_names;
  	data_dictionary.species_names = species_names;
+    data_dictionary.rates_names = rates_names;
  	data_dictionary.n_params = n_params;
  	data_dictionary.n_species = n_species;
+    data_dictionary.n_rates = n_rates;
  	data_dictionary.vol_plasma = vol_plasma;
  	data_dictionary.vol_alv_ml = vol_alv_ml;
  	data_dictionary.mw = mw;
